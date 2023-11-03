@@ -1,52 +1,73 @@
+const username = document.querySelector("#username");
+const email = document.querySelector("#email");
+const password = document.querySelector("#password");
+const confirmPassword = document.querySelector("#confirm-password");
 const form = document.querySelector("form");
 
 function showError(input, message) {
-  const parent = input.parentElement;
-  const small = parent.querySelector("small");
+  let parent = input.parentElement;
+  let small = parent.querySelector("small");
   parent.classList.add("error");
   small.innerText = message;
 }
 
 function showSuccess(input) {
-  const parent = input.parentElement;
-  const small = parent.querySelector("small");
+  let parent = input.parentElement;
+  let small = parent.querySelector("small");
   parent.classList.remove("error");
   small.innerText = "";
 }
 
-function validateInput(input, validationFn, errorMessage) {
-  input.value = input.value.trim();
-  if (validationFn(input.value)) {
-    showError(input, errorMessage);
-    return true;
+function checkEmptyError(listInput) {
+  let isEmptyError = false;
+
+  for (let i = 0; i < listInput.length; i++) {
+    let input = listInput[i];
+    input.value = input.value.trim();
+    if (!input.value) {
+      isEmptyError = true;
+      showError(input, "Không được để trống");
+    } else {
+      showSuccess(input);
+    }
   }
-  showSuccess(input);
-  return false;
+
+  return isEmptyError;
 }
 
-function checkEmpty(input) {
-  return input.value === "";
-}
-
-function checkEmail(email) {
+function checkEmailError(input) {
   const regexEmail =
     /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-  return !regexEmail.test(email);
+  let isEmailError = !regexEmail.test(input.value);
+  input.value = input.value.trim();
+  if (regexEmail.test(input.value)) {
+    showSuccess(input);
+  } else {
+    showError(input, "Email invalid");
+  }
+  return isEmailError;
 }
 
-function checkLength(input, name, min, max) {
-  const value = input.value.trim();
-  if (value.length < min || value.length > max) {
-    showError(input, `${name} must be between ${min} and ${max} characters`);
+function checkLengthError(input, name, min, max) {
+  input.value = input.value.trim();
+
+  if (input.value.length < min) {
+    showError(input, `${name} has at least ${min} characters`);
     return true;
   }
+
+  if (input.value.length > max) {
+    showError(input, `${name} must not exceed ${max} characters`);
+    return true;
+  }
+
   showSuccess(input);
   return false;
 }
 
-function checkPasswordMatch(password, confirmPassword) {
-  if (password.value !== confirmPassword.value) {
-    showError(confirmPassword, "Passwords do not match");
+function checkMatchPassword(passwordInput, cfPasswordInput) {
+  if (passwordInput.value !== cfPasswordInput.value) {
+    showError(cfPasswordInput, "Password do not match");
     return true;
   }
   return false;
@@ -55,32 +76,17 @@ function checkPasswordMatch(password, confirmPassword) {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const username = document.querySelector("#username");
-  const email = document.querySelector("#email");
-  const password = document.querySelector("#password");
-  const confirmPassword = document.querySelector("#confirm-password");
-
-  const isEmptyError = validateInput(
+  let isEmptyError = checkEmptyError([
     username,
-    checkEmpty,
-    "Không được để trống"
-  );
-  const isEmailError = validateInput(email, checkEmail, "Email invalid");
-  const isUserNameLengthError = validateInput(
-    username,
-    (value) => checkLength(username, "Username", 3, 10),
-    "Invalid username length"
-  );
-  const isPasswordLengthError = validateInput(
+    email,
     password,
-    (value) => checkLength(password, "Password", 8, 25),
-    "Invalid password length"
-  );
-  const isCfPasswordError = validateInput(
     confirmPassword,
-    (value) => checkPasswordMatch(password, confirmPassword),
-    "Password do not match"
-  );
+  ]);
+
+  let isEmailError = checkEmailError(email);
+  let isUserNameLengthError = checkLengthError(username, "Username", 3, 10);
+  let isPasswordLengthError = checkLengthError(password, "Password", 8, 25);
+  let isCfPasswordError = checkMatchPassword(password, confirmPassword);
 
   if (
     !isEmptyError &&
@@ -89,23 +95,30 @@ form.addEventListener("submit", (e) => {
     !isPasswordLengthError &&
     !isCfPasswordError
   ) {
+    // Thêm dữ liệu vào LocalStorage ở đây
     const userData = {
       username: username.value,
       email: email.value,
       password: password.value,
     };
-    localStorage.setItem("userData", JSON.stringify(userData));
+    // Chuyển đối tượng userData thành chuỗi JSON
+    const userDataJSON = JSON.stringify(userData);
+    // Lưu vào LocalStorage với một khóa tùy chọn (ví dụ: "userData")
+    localStorage.setItem("userData", userDataJSON);
 
+    // Hiển thị thông báo SweetAlert2 thành công
     Swal.fire({
       icon: "success",
       title: "Đăng ký thành công!",
       text: "Bạn có thể đăng nhập ngay bây giờ.",
       showConfirmButton: false,
-      timer: 2000,
+      timer: 2000, // Tự động đóng thông báo sau 2 giây
     }).then(() => {
+      // Sau khi đóng thông báo, chuyển hướng đến trang login.html
       window.location.href = "login.html";
     });
   } else {
+    // Hiển thị thông báo lỗi nếu có lỗi
     Swal.fire({
       icon: "error",
       title: "Lỗi",
