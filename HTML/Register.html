@@ -16,43 +16,49 @@
     />
 
     <!-- ===== CSS ===== -->
-    <link rel="stylesheet" href="./Register.css" />
+    <link rel="stylesheet" href="../CSS//Register.css" />
 
     <title>Registration Form</title>
   </head>
   <body>
     <div class="container">
-      <h1>Register Form</h1>
-      <div class="form-control error">
-        <input type="text" placeholder="Username" />
-        <small>Error</small>
-        <span></span>
-      </div>
+      <form>
+        <h1>Register Form</h1>
+        <div class="form-control error">
+          <input id="username" type="text" placeholder="Username" />
+          <small></small>
+          <span></span>
+        </div>
 
-      <div class="form-control error">
-        <input type="email" placeholder="Email" />
-        <small>Error</small>
-        <span></span>
-      </div>
+        <div class="form-control error">
+          <input id="email" type="email" placeholder="Email" />
+          <small></small>
+          <span></span>
+        </div>
 
-      <div class="form-control error">
-        <input type="password" placeholder="Password" />
-        <small>Error</small>
-        <span></span>
-      </div>
+        <div class="form-control error">
+          <input id="password" type="password" placeholder="Password" />
+          <small></small>
+          <span></span>
+        </div>
 
-      <div class="form-control error">
-        <input type="password" placeholder="Confirm Password" />
-        <small>Error</small>
-        <span></span>
-      </div>
+        <div class="form-control error">
+          <input
+            id="confirm-password"
+            type="password"
+            placeholder="Confirm Password"
+          />
+          <small></small>
+          <span></span>
+        </div>
 
-      <button type="submit" class="btn-submit">Register</button>
-      <div class="signin-link">
-        Do you have an account? <a href="#">Login</a>
-      </div>
+        <button type="submit" class="btn-submit">Register</button>
+        <div class="signin-link">
+          Do you have an account? <a href="#">Login</a>
+        </div>
+      </form>
     </div>
-
-    <script src="./Register.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../JS/Register.js"></script>
   </body>
 </html>

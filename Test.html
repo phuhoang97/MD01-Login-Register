@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quản lý sản phẩm</title>
+  </head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    form,
+    ul {
+      margin: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    li {
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    button {
+      margin: 5px;
+    }
+  </style>
+  <body>
+    <h1>Quản lý sản phẩm</h1>
+    <form id="productForm">
+      <label for="id">ID:</label>
+      <input type="text" id="id" required /><br />
+      <label for="nameproduct">Tên sản phẩm:</label>
+      <input type="text" id="nameproduct" required /><br />
+      <label for="price">Giá:</label>
+      <input type="number" id="price" required /><br />
+      <label for="category">Danh mục:</label>
+      <input type="text" id="category" required /><br />
+      <button type="button" onclick="addOrUpdateProduct()">Thêm/Sửa</button>
+    </form>
+    <ul id="productList"></ul>
+
+    <script>
+      function loadProducts() {
+        const productList = document.getElementById("productList");
+        productList.innerHTML = "";
+
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          const product = JSON.parse(localStorage.getItem(key));
+
+          const listItem = document.createElement("li");
+          listItem.innerHTML = `
+                ID: ${product.id}<br>
+                Tên sản phẩm: ${product.nameproduct}<br>
+                Giá: ${product.price}<br>
+                Danh mục: ${product.category}<br>
+                <button onclick="editProduct('${key}')">Sửa</button>
+                <button onclick="deleteProduct('${key}')">Xóa</button>
+            `;
+
+          productList.appendChild(listItem);
+        }
+      }
+      loadProducts();
+      function addOrUpdateProduct() {
+        const id = document.getElementById("id").value;
+        const nameproduct = document.getElementById("nameproduct").value;
+        const price = document.getElementById("price").value;
+        const category = document.getElementById("category").value;
+
+        const product = {
+          id: id,
+          nameproduct: nameproduct,
+          price: price,
+          category: category,
+        };
+
+        localStorage.setItem(id, JSON.stringify(product));
+
+        loadProducts();
+
+        document.getElementById("productForm").reset();
+      }
+
+      function editProduct(id) {
+        const product = JSON.parse(localStorage.getItem(id));
+
+        document.getElementById("id").value = product.id;
+        document.getElementById("nameproduct").value = product.nameproduct;
+        document.getElementById("price").value = product.price;
+        document.getElementById("category").value = product.category;
+      }
+
+      function deleteProduct(id) {
+        localStorage.removeItem(id);
+        loadProducts();
+      }
+    </script>
+  </body>
+</html>
